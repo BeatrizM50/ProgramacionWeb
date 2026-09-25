@@ -1,0 +1,454 @@
+
+/* ---------- Variables ---------- */
+:root {
+    /* Paleta de bloques de Minecraft */
+    --cesped: #5dba3f;         
+    --cesped-osc: #15400a;      
+    --tierra: #8b5a2b;          
+    --tierra-osc: #7a4d22;      
+    --madera: #c6b28e;          
+    --madera-osc: #6b4f35;      
+    --pergamino: #f7efd8;       
+    --piedra: #3a3a3a;          
+    --negro-bloque: #141414;    
+    --texto: #292018;           
+
+    --fuente-pixel: "Pixelify Sans", "Segoe UI", "Trebuchet MS", sans-serif;
+    --fuente-titulo: "Press Start 2P", "Pixelify Sans", monospace;
+    --sombra-bloque: 5px 5px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- Reset básico ---------- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--fuente-pixel);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--texto);
+    background-color: var(--madera);
+    /* Textura de tablones de madera */
+    background-image:
+        repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 2px, transparent 2px 48px),
+        repeating-linear-gradient(to bottom, transparent 0 24px, rgba(0, 0, 0, 0.06) 24px 25px),
+        repeating-linear-gradient(to right, rgba(0, 0, 0, 0.07) 0 2px, transparent 2px 96px);
+}
+
+::selection {
+    background: var(--cesped);
+    color: #fff;
+}
+
+header {
+    text-align: center;
+    color: #fff;
+    padding: 2.6rem 1rem 1.6rem;
+    border-bottom: 4px solid var(--tierra-osc);
+    background-color: var(--tierra);
+    background-image:
+        /* oscurece para que el texto destaque */
+        linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
+        /* franja de césped arriba */
+        linear-gradient(to bottom, var(--cesped) 0 34%, transparent 34%),
+        /* textura de tierra (cuadrícula de bloques) */
+        repeating-conic-gradient(var(--tierra) 0% 25%, var(--tierra-osc) 0% 50%);
+    background-repeat: no-repeat, no-repeat, repeat;
+    background-size: 100% 100%, 100% 100%, 56px 56px;
+    box-shadow: inset 0 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    font-family: var(--fuente-titulo);
+    font-size: 1.1rem;
+    line-height: 1.9;
+    letter-spacing: 1px;
+    color: #ffffff;
+    text-shadow:
+        3px 3px 0 var(--cesped-osc),
+        6px 6px 0 rgba(0, 0, 0, 0.35);
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    color: #cfe8a2;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* ---------- botones de piedra ---------- */
+nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.4rem;
+}
+
+nav a {
+    display: inline-block;
+    padding: 0.5rem 1.1rem;
+    font-weight: 700;
+    font-size: 0.98rem;
+    color: #fff;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+    text-decoration: none;
+    background-image: linear-gradient(#b8b8b8, #8a8a8a);
+    border: 2px solid #0f0f0f;
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.4),
+        0 3px 0 #262626;
+    transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+nav a:hover {
+    filter: brightness(1.12);
+    transform: translateY(1px);
+}
+
+nav a:active {
+    box-shadow:
+        inset 0 2px 0 rgba(255, 255, 255, 0.4),
+        0 1px 0 #262626;
+    transform: translateY(2px);
+}
+
+hr {
+    border: 2px solid var(--tierra-osc);
+    max-width: 960px;
+    margin: 0 auto;
+    height: 20px;
+    background-image:
+        linear-gradient(to bottom, var(--cesped) 0 45%, transparent 45%),
+        repeating-conic-gradient(var(--tierra) 0% 25%, var(--tierra-osc) 0% 50%);
+    background-repeat: no-repeat, repeat;
+    background-size: 100% 100%, 26px 26px;
+    box-shadow: var(--sombra-bloque);
+}
+
+main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 2.5rem;
+}
+
+article {
+    background: var(--pergamino);
+    /* borde biselado como los contenedores del juego */
+    border: 3px solid;
+    border-color: #f7ecd2 #6b4f23 #6b4f23 #f7ecd2;
+    box-shadow: var(--sombra-bloque);
+    padding: 1.75rem 2rem;
+    margin: 2rem 0;
+}
+
+article h2 {
+    color: #2f6b1e;
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-shadow: 2px 2px 0 rgba(93, 186, 63, 0.3);
+    margin-bottom: 1rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 4px solid var(--cesped);
+}
+
+article p {
+    margin-bottom: 1rem;
+}
+
+article a {
+    color: #2f6b1e;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid var(--cesped);
+}
+
+article a:hover {
+    background: var(--cesped);
+    color: #fff;
+}
+
+/* ----------  ranuras de inventario ---------- */
+#lista ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+#lista li {
+    background: #fbf5e6;
+    border: 2px solid #3d2a14;
+    border-left: 8px solid var(--cesped);
+    margin-bottom: 0.65rem;
+    padding: 0.6rem 0.9rem;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+#lista li:hover {
+    background: #e9f5dd;
+    transform: translateX(4px);
+}
+
+#lista strong {
+    color: #2f6b1e;
+}
+
+/* ----------  mesa de crafteo ---------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 3px solid var(--tierra-osc);
+    box-shadow: var(--sombra-bloque);
+    margin-top: 1rem;
+}
+
+thead th {
+    background-image: linear-gradient(#6fcf4f, #4fa832);
+    color: #fff;
+    font-family: var(--fuente-pixel);
+    font-weight: 700;
+    text-align: left;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+    padding: 0.7rem 1rem;
+    border-right: 2px solid #2d1408;
+    border-bottom: 2px solid #2d1408;
+}
+
+thead th:last-child {
+    border-right: none;
+}
+
+tbody td {
+    padding: 0.7rem 1rem;
+    background: var(--pergamino);
+    border-right: 1px solid #c9b98d;
+    border-bottom: 1px solid #c9b98d;
+}
+
+tbody td:last-child {
+    border-right: none;
+}
+
+tbody tr:nth-child(even) td {
+    background: #efe4c0;
+}
+
+tbody tr:hover td {
+    background: #dfeecf;
+}
+
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ---------- Galeria ---------- */
+#galeria {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.4rem;
+}
+
+#galeria h2,
+#galeria > p:last-child {
+    grid-column: 1 / -1;
+}
+
+#galeria > p:last-child {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+figure {
+    background: var(--madera-osc);
+    border: 4px solid #3d2a14;
+    box-shadow:
+        inset 0 0 0 2px #8a6a45,
+        var(--sombra-bloque);
+    text-align: center;
+    overflow: hidden;
+    transition: transform 0.2s ease;
+}
+
+figure:hover {
+    transform: rotate(-1.2deg);
+}
+
+figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border: 3px solid #fbf5e6;      
+    transition: transform 0.35s ease;
+}
+
+figure:hover img {
+    transform: scale(1.06);
+}
+
+figcaption {
+    padding: 0.55rem;
+    color: #ffe9a8;
+    font-weight: 600;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.55);
+}
+
+/* ---------- Formulario ---------- */
+form label {
+    display: block;
+    font-weight: 700;
+    color: #2f6b1e;
+    margin-top: 0.75rem;
+}
+
+form input,
+form textarea {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    margin-top: 0.25rem;
+    font-family: var(--fuente-pixel);
+    font-size: 1rem;
+    color: var(--texto);
+    background: #fbf5e6;
+    border: 2px solid #3d2a14;
+    box-shadow: inset 2px 2px 0 rgba(0, 0, 0, 0.12);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+form input:focus,
+form textarea:focus {
+    outline: none;
+    border-color: var(--cesped);
+    box-shadow:
+        inset 2px 2px 0 rgba(0, 0, 0, 0.12),
+        0 0 0 3px rgba(93, 186, 63, 0.35);
+}
+
+button[type="submit"] {
+    margin-top: 1.3rem;
+    font-family: var(--fuente-pixel);
+    font-weight: 700;
+    font-size: 1.05rem;
+    color: #fff;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+    background-image: linear-gradient(#6fcf4f, #4fa832);
+    border: 2px solid #0f0f0f;
+    border-radius: 0;
+    box-shadow:
+        inset 0 3px 0 rgba(255, 255, 255, 0.4),
+        0 4px 0 var(--cesped-osc);
+    padding: 0.7rem 2.2rem;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    filter: brightness(1.1);
+}
+
+button[type="submit"]:active {
+    box-shadow:
+        inset 0 3px 0 rgba(255, 255, 255, 0.4),
+        0 0 0 var(--cesped-osc);
+    transform: translateY(4px);
+}
+
+aside {
+    max-width: 960px;
+    margin: 0 auto;
+    background-color: #171717;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05));
+    color: #eeeeee;
+    border: 2px solid #7f7f7f;
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+    padding: 1.5rem 2rem;
+}
+
+aside h3 {
+    font-family: var(--fuente-titulo);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: #6fe3ff;                     /* cian encantamiento */
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
+    margin-bottom: 0.6rem;
+}
+
+aside p {
+    font-size: 1rem;
+}
+
+aside em {
+    color: #8dff6f;                     /* verde lima */
+}
+
+footer {
+    background-color: var(--piedra);
+    background-image: repeating-conic-gradient(#3f3f3f 0% 25%, #313131 0% 50%);
+    background-size: 32px 32px;
+    color: #d8d8d8;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    margin-top: 2.5rem;
+    border-top: 4px solid #1f1f1f;
+    box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.08);
+}
+
+footer p {
+    margin-bottom: 0.4rem;
+}
+
+footer a {
+    color: #ffe9a8;
+    text-decoration: none;
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.6);
+}
+
+footer a:hover {
+    text-decoration: underline;
+    color: #fff;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 0.8rem;
+        line-height: 2;
+    }
+
+    header p {
+        font-size: 0.95rem;
+    }
+
+    nav a {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    article {
+        padding: 1.25rem 1.1rem;
+    }
+
+    article h2 {
+        font-size: 1.45rem;
+    }
+
+    #galeria {
+        grid-template-columns: 1fr;
+    }
+
+    table {
+        font-size: 0.9rem;
+    }
+
+    aside h3 {
+        font-size: 0.65rem;
+    }
+}
