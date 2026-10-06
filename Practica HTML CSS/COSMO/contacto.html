@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contacta con COSMO para compartir preguntas y comentarios sobre astronomía.">
+    <meta name="keywords" content="contacto, COSMO, astronomía">
+    <meta name="author" content="COSMO">
+    <title>COSMO | Contacto</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<header>
+    <nav aria-label="Navegación principal">
+        <a class="logo" href="index.html">✦ COSMO<span>.</span></a>
+        <ul class="menu">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+            <li><a href="exploracion.html">Exploración</a></li>
+            <li><a class="activo" href="contacto.html">Contacto</a></li>
+            <li><a href="login.html">Iniciar sesión</a></li>
+            <li class="tema"><input type="checkbox" id="tema"><label for="tema">☾</label></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section>
+        <h1 class="titulo">Contacta con COSMO</h1>
+        <p class="descripcion">¿Tienes una pregunta sobre el universo? Envíanos tu mensaje.</p>
+
+        <form class="formulario" action="#" method="post">
+            <div class="campo">
+                <label for="nombre">Nombre completo</label>
+                <input type="text" id="nombre" name="nombre" required minlength="3">
+            </div>
+
+            <div class="campo">
+                <label for="correo">Correo electrónico</label>
+                <input type="email" id="correo" name="correo" required>
+            </div>
+
+            <div class="campo">
+                <label for="tema-consulta">Tema de consulta</label>
+                <select id="tema-consulta" name="tema-consulta" required>
+                    <option value="">Selecciona un tema</option>
+                    <option value="planetas">Planetas</option>
+                    <option value="estrellas">Estrellas</option>
+                    <option value="galaxias">Galaxias</option>
+                    <option value="exploracion">Exploración espacial</option>
+                </select>
+            </div>
+
+            <div class="campo">
+                <label for="mensaje">Mensaje</label>
+                <textarea id="mensaje" name="mensaje" required minlength="10"></textarea>
+            </div>
+
+            <div class="check">
+                <input type="checkbox" id="informacion" name="informacion">
+                <label for="informacion">Deseo recibir información de COSMO.</label>
+            </div>
+
+            <button class="boton" type="submit">Enviar mensaje</button>
+        </form>
+
+        <p class="ubicacion">📍 COSMO — Centro de información astronómica</p>
+    </section>
+</main>
+
+<footer>
+    <p>© 2026 <strong>COSMO</strong> — Gracias por visitar nuestro universo.</p>
+</footer>
+</body>
+</html>

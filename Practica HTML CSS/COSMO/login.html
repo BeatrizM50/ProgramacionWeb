@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Inicia sesión en COSMO.">
+    <meta name="keywords" content="COSMO, iniciar sesión, astronomía">
+    <meta name="author" content="COSMO">
+    <title>COSMO | Iniciar sesión</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+<header>
+    <nav aria-label="Navegación principal">
+        <a class="logo" href="index.html">✦ COSMO<span>.</span></a>
+        <ul class="menu">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+            <li><a href="exploracion.html">Exploración</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+            <li><a class="activo" href="login.html">Iniciar sesión</a></li>
+            <li class="tema"><input type="checkbox" id="tema"><label for="tema">☾</label></li>
+        </ul>
+    </nav>
+</header>
+
+<main class="login">
+    <form class="formulario" action="#" method="post">
+        <h1 class="titulo">Iniciar sesión</h1>
+        <p class="descripcion">Accede a tu espacio de exploración.</p>
+
+        <div class="campo">
+            <label for="usuario">Correo electrónico</label>
+            <input type="email" id="usuario" name="usuario" required>
+        </div>
+
+        <div class="campo">
+            <label for="contrasena">Contraseña</label>
+            <input type="password" id="contrasena" name="contrasena" required minlength="6">
+        </div>
+
+        <div class="check">
+            <input type="checkbox" id="recordarme" name="recordarme">
+            <label for="recordarme">Recordarme</label>
+        </div>
+
+        <button class="boton" type="submit">Iniciar sesión</button>
+
+        <div class="enlaces-form">
+            <a href="#">¿Olvidaste tu contraseña?</a>
+            <a href="#">¿No tienes cuenta? Regístrate</a>
+        </div>
+    </form>
+</main>
+
+<footer>
+    <p>© 2026 <strong>COSMO</strong> — Explora el universo.</p>
+</footer>
+</body>
+</html>
