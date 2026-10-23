@@ -307,3 +307,54 @@ function devolverLibro(idLibro, datos) {
         prestamo: prestamo
     };
 }
+
+
+function obtenerLibrosFiltrados(datos, preferencias) {
+    const busqueda = preferencias.busqueda
+        .trim()
+        .toLocaleLowerCase("es");
+
+    const resultado = datos.libros.filter(function (libro) {
+        const coincideBusqueda =
+            libro.titulo.toLocaleLowerCase("es").includes(busqueda) ||
+            libro.autor.toLocaleLowerCase("es").includes(busqueda);
+
+        const coincideGenero =
+            preferencias.genero === "todos" ||
+            libro.genero === preferencias.genero;
+
+        const prestamo = buscarPrestamoActivo(
+            libro.id,
+            datos.prestamos
+        );
+
+        let coincideEstado = true;
+
+        if (preferencias.estado === "disponibles") {
+            coincideEstado = libroDisponible(libro, datos);
+        } else if (preferencias.estado === "prestados") {
+            coincideEstado = prestamo !== null;
+        }
+
+        return coincideBusqueda && coincideGenero && coincideEstado;
+    });
+
+    resultado.sort(function (a, b) {
+        let comparacion;
+
+        if (preferencias.ordenarPor === "anio") {
+            comparacion = a.anio - b.anio;
+        } else if (preferencias.ordenarPor === "autor") {
+            comparacion = a.autor.localeCompare(b.autor, "es");
+        } else {
+            comparacion = a.titulo.localeCompare(b.titulo, "es");
+        }
+
+        return preferencias.direccion === "desc"
+            ? -comparacion
+            : comparacion;
+    });
+
+    return resultado;
+}
+
