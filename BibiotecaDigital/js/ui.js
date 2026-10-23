@@ -131,3 +131,79 @@ function renderizarCatalogo(datos) {
 
     actualizarContadorPrestamos(datos);
 }
+
+function mostrarMensajeFormulario(mensaje, esError = false) {
+    const elemento = document.getElementById("mensaje-formulario");
+
+    elemento.textContent = mensaje;
+    elemento.classList.toggle("mensaje-error", esError);
+    elemento.classList.toggle("mensaje-exito", !esError);
+}
+
+function limpiarErroresFormulario() {
+    ["titulo", "autor", "anio", "genero", "comentario", "coleccion"]
+        .forEach(function (campo) {
+            const error = document.getElementById("error-" + campo);
+
+            if (error) {
+                error.textContent = "";
+            }
+        });
+
+    document.querySelectorAll("#form-libro input, #form-libro select, #form-libro textarea")
+        .forEach(function (campo) {
+            campo.removeAttribute("aria-invalid");
+        });
+}
+
+function mostrarErrorCampo(campo, mensaje) {
+    const error = document.getElementById("error-" + campo);
+
+    if (error) {
+        error.textContent = mensaje;
+    }
+
+    const control = document.getElementById(campo);
+
+    if (control) {
+        control.setAttribute("aria-invalid", "true");
+    }
+}
+
+function prepararFormulario(libro = null) {
+    const formulario = document.getElementById("form-libro");
+
+    formulario.reset();
+    limpiarErroresFormulario();
+
+    document.getElementById("mensaje-formulario").textContent = "";
+
+    const editando = libro !== null;
+
+    document.getElementById("titulo-formulario").textContent =
+        editando ? "Editar libro" : "Agregar un libro";
+
+    document.getElementById("guardar-libro").textContent =
+        editando ? "Guardar cambios" : "Agregar libro";
+
+    document.getElementById("cancelar-edicion").hidden = !editando;
+
+    if (editando) {
+        document.getElementById("titulo").value = libro.titulo;
+        document.getElementById("autor").value = libro.autor;
+        document.getElementById("anio").value = libro.anio;
+        document.getElementById("genero").value = libro.genero;
+        document.getElementById("comentario").value = libro.comentario || "";
+        document.getElementById("coleccion").checked = libro.coleccion;
+    }
+
+    actualizarContadorComentario();
+}
+
+function actualizarContadorComentario() {
+    const comentario = document.getElementById("comentario");
+    const restantes = 120 - comentario.value.length;
+
+    document.getElementById("contador-comentario").textContent =
+        restantes + " caracteres restantes";
+}
