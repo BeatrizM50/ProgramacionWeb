@@ -6,6 +6,80 @@ let datosBiblioteca = cargarDatos();
 document.addEventListener("DOMContentLoaded", function () {
     renderizarCatalogo(datosBiblioteca);
 
+    
+    // Recuperar las preferencias del catálogo.
+    let preferenciasCatalogo = cargarPreferenciasCatalogo();
+
+    const campoBusqueda = document.getElementById("buscar-libro");
+    const filtroGenero = document.getElementById("filtro-genero");
+    const ordenarPor = document.getElementById("ordenar-por");
+    const direccionOrden = document.getElementById("direccion-orden");
+
+    // Añadir los géneros existentes al selector.
+    const generos = [...new Set(
+        datosBiblioteca.libros.map(function (libro) {
+            return libro.genero;
+        })
+    )].sort(function (a, b) {
+        return a.localeCompare(b, "es");
+    });
+
+    generos.forEach(function (genero) {
+        const opcion = document.createElement("option");
+        opcion.value = genero;
+        opcion.textContent = genero;
+        filtroGenero.append(opcion);
+    });
+
+    // Restaurar las preferencias.
+    campoBusqueda.value = preferenciasCatalogo.busqueda;
+    filtroGenero.value = preferenciasCatalogo.genero;
+    ordenarPor.value = preferenciasCatalogo.ordenarPor;
+    direccionOrden.value = preferenciasCatalogo.direccion;
+
+    function aplicarPreferenciasCatalogo() {
+        guardarPreferenciasCatalogo(preferenciasCatalogo);
+        renderizarCatalogo(datosBiblioteca);
+    }
+
+    campoBusqueda.addEventListener("input", function () {
+        preferenciasCatalogo.busqueda = campoBusqueda.value;
+        aplicarPreferenciasCatalogo();
+    });
+
+    filtroGenero.addEventListener("change", function () {
+        preferenciasCatalogo.genero = filtroGenero.value;
+        aplicarPreferenciasCatalogo();
+    });
+
+    ordenarPor.addEventListener("change", function () {
+        preferenciasCatalogo.ordenarPor = ordenarPor.value;
+        aplicarPreferenciasCatalogo();
+    });
+
+    direccionOrden.addEventListener("change", function () {
+        preferenciasCatalogo.direccion = direccionOrden.value;
+        aplicarPreferenciasCatalogo();
+    });
+
+    document.querySelectorAll("[data-filtro]").forEach(function (boton) {
+        boton.addEventListener("click", function () {
+            preferenciasCatalogo.estado = boton.dataset.filtro;
+            document.querySelectorAll("[data-filtro]").forEach(function (otro) {
+                otro.classList.toggle("activo", otro === boton);
+            });
+
+            aplicarPreferenciasCatalogo();
+        });
+    });
+
+    document.querySelectorAll("[data-filtro]").forEach(function (boton) {
+        boton.classList.toggle(
+            "activo",
+            boton.dataset.filtro === preferenciasCatalogo.estado
+        );
+    });
+
 
     // Estado del formulario: null significa que estamos agregando.
     let idLibroEditando = null;
