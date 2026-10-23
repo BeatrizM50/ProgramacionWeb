@@ -38,3 +38,39 @@ function restablecerDatos() {
 
     return datosIniciales;
 }
+
+
+const CLAVE_PREFERENCIAS_CATALOGO = "bibliotecaDigitalPreferenciasCatalogo";
+
+function cargarPreferenciasCatalogo() {
+    const guardadas = localStorage.getItem(CLAVE_PREFERENCIAS_CATALOGO);
+
+    const predeterminadas = {
+        busqueda: "",
+        genero: "todos",
+        estado: "todos",
+        ordenarPor: "titulo",
+        direccion: "asc"
+    };
+
+    if (guardadas === null) {
+        return predeterminadas;
+    }
+
+    try {
+        return {
+            ...predeterminadas,
+            ...JSON.parse(guardadas)
+        };
+    } catch (error) {
+        console.error("No se pudieron cargar las preferencias.", error);
+        return predeterminadas;
+    }
+}
+
+function guardarPreferenciasCatalogo(preferencias) {
+    localStorage.setItem(
+        CLAVE_PREFERENCIAS_CATALOGO,
+        JSON.stringify(preferencias)
+    );
+}
