@@ -82,3 +82,228 @@ function siguienteIdPrestamo(prestamos) {
         return prestamo.id;
     })) + 1;
 }
+
+
+function buscarLibroPorId(idLibro, datos) {
+    return datos.libros.find(function (libro) {
+        return libro.id === idLibro;
+    }) || null;
+}
+
+// Comprueba si ya existe un libro con el mismo título y autor.
+function existeLibroDuplicado(titulo, autor, datos, idExcluir = null) {
+    const tituloNormalizado = titulo.trim().toLocaleLowerCase("es");
+    const autorNormalizado = autor.trim().toLocaleLowerCase("es");
+
+    return datos.libros.some(function (libro) {
+        return libro.id !== idExcluir &&
+            libro.titulo.trim().toLocaleLowerCase("es") === tituloNormalizado &&
+            libro.autor.trim().toLocaleLowerCase("es") === autorNormalizado;
+    });
+}
+
+// Agrega un libro nuevo.
+function agregarLibro(datos, campos) {
+    const titulo = campos.titulo.trim();
+    const autor = campos.autor.trim();
+    const anio = Number(campos.anio);
+    const genero = campos.genero;
+    const comentario = (campos.comentario || "").trim();
+    const coleccion = Boolean(campos.coleccion);
+
+    if (titulo.length < 3 || titulo.length > 60) {
+        return { ok: false, mensaje: "El título debe tener entre 3 y 60 caracteres." };
+    }
+
+    if (!autor) {
+        return { ok: false, mensaje: "El autor es obligatorio." };
+    }
+
+    if (!Number.isInteger(anio) || anio < 1000 || anio > 2026) {
+        return { ok: false, mensaje: "El año debe estar entre 1000 y 2026." };
+    }
+
+    if (!genero) {
+        return { ok: false, mensaje: "Debes seleccionar un género." };
+    }
+
+    if (comentario.length > 120) {
+        return { ok: false, mensaje: "El comentario no puede superar los 120 caracteres." };
+    }
+
+    if (existeLibroDuplicado(titulo, autor, datos)) {
+        return { ok: false, mensaje: "Ya existe un libro con ese título y autor." };
+    }
+
+    const libro = {
+        id: siguienteIdLibro(datos.libros),
+        titulo: titulo,
+        autor: autor,
+        anio: anio,
+        genero: genero,
+        coleccion: coleccion,
+        comentario: comentario
+    };
+
+    datos.libros.push(libro);
+
+    return { ok: true, mensaje: "Libro agregado correctamente.", libro: libro };
+}
+
+// Edita un libro existente.
+function editarLibro(idLibro, datos, campos) {
+    const libro = buscarLibroPorId(idLibro, datos);
+
+    if (!libro) {
+        return { ok: false, mensaje: "No se encontró el libro." };
+    }
+
+    const titulo = campos.titulo.trim();
+    const autor = campos.autor.trim();
+    const anio = Number(campos.anio);
+    const genero = campos.genero;
+    const comentario = (campos.comentario || "").trim();
+    const coleccion = Boolean(campos.coleccion);
+
+    if (titulo.length < 3 || titulo.length > 60) {
+        return { ok: false, mensaje: "El título debe tener entre 3 y 60 caracteres." };
+    }
+
+    if (!autor) {
+        return { ok: false, mensaje: "El autor es obligatorio." };
+    }
+
+    if (!Number.isInteger(anio) || anio < 1000 || anio > 2026) {
+        return { ok: false, mensaje: "El año debe estar entre 1000 y 2026." };
+    }
+
+    if (!genero) {
+        return { ok: false, mensaje: "Debes seleccionar un género." };
+    }
+
+    if (comentario.length > 120) {
+        return { ok: false, mensaje: "El comentario no puede superar los 120 caracteres." };
+    }
+
+    if (existeLibroDuplicado(titulo, autor, datos, idLibro)) {
+        return { ok: false, mensaje: "Ya existe otro libro con ese título y autor." };
+    }
+
+    const tienePrestamoActivo =
+        buscarPrestamoActivo(idLibro, datos.prestamos) !== null;
+
+    if (tienePrestamoActivo && coleccion) {
+        return {
+            ok: false,
+            mensaje: "No puedes convertir en libro de colección un libro prestado."
+        };
+    }
+
+    libro.titulo = titulo;
+    libro.autor = autor;
+    libro.anio = anio;
+    libro.genero = genero;
+    libro.comentario = comentario;
+    libro.coleccion = coleccion;
+
+    return { ok: true, mensaje: "Libro actualizado correctamente.", libro: libro };
+}
+
+// Elimina un libro y su historial de préstamos devueltos.
+function eliminarLibro(idLibro, datos) {
+    const libro = buscarLibroPorId(idLibro, datos);
+
+    if (!libro) {
+        return { ok: false, mensaje: "No se encontró el libro." };
+    }
+
+    if (buscarPrestamoActivo(idLibro, datos.prestamos) !== null) {
+        return {
+            ok: false,
+            mensaje: "No puedes eliminar un libro que tiene un préstamo activo."
+        };
+    }
+
+    datos.libros = datos.libros.filter(function (elemento) {
+        return elemento.id !== idLibro;
+    });
+
+    datos.prestamos = datos.prestamos.filter(function (prestamo) {
+        return prestamo.idLibro !== idLibro;
+    });
+
+    return { ok: true, mensaje: "Libro eliminado correctamente." };
+}
+
+// Registra un préstamo con un plazo de 14 días.
+function prestarLibro(idLibro, persona, datos) {
+    const libro = buscarLibroPorId(idLibro, datos);
+    const nombrePersona = persona.trim();
+
+    if (!libro) {
+        return { ok: false, mensaje: "No se encontró el libro." };
+    }
+
+    if (!nombrePersona) {
+        return { ok: false, mensaje: "Debes indicar el nombre de la persona." };
+    }
+
+    if (libro.coleccion) {
+        return { ok: false, mensaje: "Los libros de colección no se pueden prestar." };
+    }
+
+    if (!libroDisponible(libro, datos)) {
+        return { ok: false, mensaje: "Este libro no está disponible." };
+    }
+
+    if (contarPrestamosActivos(datos.prestamos) >= 3) {
+        return { ok: false, mensaje: "No puede haber más de 3 préstamos activos." };
+    }
+
+    const hoy = obtenerFechaActual();
+
+    const prestamo = {
+        id: siguienteIdPrestamo(datos.prestamos),
+        idLibro: idLibro,
+        persona: nombrePersona,
+        fechaPrestamo: hoy,
+        fechaLimite: sumarDias(hoy, 14),
+        fechaDevolucion: null
+    };
+
+    datos.prestamos.push(prestamo);
+
+    return { ok: true, mensaje: "Préstamo registrado correctamente.", prestamo: prestamo };
+}
+
+// Devuelve un libro sin borrar el préstamo de la colección.
+function devolverLibro(idLibro, datos) {
+    const prestamo = buscarPrestamoActivo(idLibro, datos.prestamos);
+
+    if (!prestamo) {
+        return { ok: false, mensaje: "Este libro no tiene un préstamo activo." };
+    }
+
+    const hoy = obtenerFechaActual();
+    prestamo.fechaDevolucion = hoy;
+
+    if (hoy > prestamo.fechaLimite) {
+        const dias = Math.floor(
+            (new Date(`${hoy}T12:00:00`) -
+             new Date(`${prestamo.fechaLimite}T12:00:00`)) /
+            (1000 * 60 * 60 * 24)
+        );
+
+        return {
+            ok: true,
+            mensaje: `Libro devuelto con ${dias} día(s) de retraso.`,
+            prestamo: prestamo
+        };
+    }
+
+    return {
+        ok: true,
+        mensaje: "Libro devuelto a tiempo.",
+        prestamo: prestamo
+    };
+}
