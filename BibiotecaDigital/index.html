@@ -42,6 +42,173 @@
     </nav>
 </header>
 
+<main>
+
+    <!-- VISTA 1: CATÁLOGO -->
+    <section id="catalogo" class="vista activa">
+        <h2>Catálogo de libros</h2>
+        <p>Explora, busca y administra los libros de tu biblioteca.</p>
+
+        <div id="mensaje-catalogo" role="status" aria-live="polite"></div>
+
+        <div class="herramientas-catalogo">
+            <label for="buscar-libro">Buscar por título o autor:</label>
+            <input
+                type="search"
+                id="buscar-libro"
+                placeholder="Escribe el título o autor..."
+            >
+
+            <label for="filtro-genero">Género:</label>
+            <select id="filtro-genero">
+                <option value="todos">Todos los géneros</option>
+            </select>
+
+            <label for="ordenar-por">Ordenar por:</label>
+            <select id="ordenar-por">
+                <option value="titulo">Título</option>
+                <option value="autor">Autor</option>
+                <option value="anio">Año</option>
+            </select>
+
+            <label for="direccion-orden">Dirección:</label>
+            <select id="direccion-orden">
+                <option value="asc">Ascendente</option>
+                <option value="desc">Descendente</option>
+            </select>
+        </div>
+
+        <div class="filtros-estado" aria-label="Filtrar libros por estado">
+            <button type="button" data-filtro="todos">Todos</button>
+            <button type="button" data-filtro="disponibles">Disponibles</button>
+            <button type="button" data-filtro="prestados">Prestados</button>
+        </div>
+
+        <p id="contador-libros" aria-live="polite">Mostrando 0 de 0 libros</p>
+
+        <div id="lista-libros" class="rejilla-libros"></div>
+    </section>
+
+    <!-- VISTA 2: PRÉSTAMOS -->
+    <section id="prestamos" class="vista" hidden>
+        <h2>Mis préstamos</h2>
+        <p>Consulta los libros prestados y sus fechas límite.</p>
+
+        <div id="mensaje-prestamos" role="status" aria-live="polite"></div>
+
+        <h3>Préstamos activos</h3>
+        <div id="lista-prestamos"></div>
+
+        <h3>Historial de devoluciones</h3>
+        <div id="historial-prestamos"></div>
+    </section>
+
+    <!-- VISTA 3: AGREGAR Y EDITAR -->
+    <section id="formulario" class="vista" hidden>
+        <h2 id="titulo-formulario">Agregar un libro</h2>
+
+        <form id="form-libro" novalidate>
+            <div class="campo">
+                <label for="titulo">Título:</label>
+                <input type="text" id="titulo" name="titulo" required>
+                <small id="error-titulo" class="error-campo"></small>
+            </div>
+
+            <div class="campo">
+                <label for="autor">Autor:</label>
+                <input type="text" id="autor" name="autor" required>
+                <small id="error-autor" class="error-campo"></small>
+            </div>
+
+            <div class="campo">
+                <label for="anio">Año de publicación:</label>
+                <input type="number" id="anio" name="anio" min="1000" max="2026" required>
+                <small id="error-anio" class="error-campo"></small>
+            </div>
+
+            <div class="campo">
+                <label for="genero">Género:</label>
+                <select id="genero" name="genero" required>
+                    <option value="">Selecciona un género</option>
+                    <option value="Novela">Novela</option>
+                    <option value="Ciencia">Ciencia</option>
+                    <option value="Historia">Historia</option>
+                    <option value="Fantasía">Fantasía</option>
+                    <option value="Misterio">Misterio</option>
+                </select>
+                <small id="error-genero" class="error-campo"></small>
+            </div>
+
+            <div class="campo">
+                <label for="comentario">Comentario:</label>
+                <textarea id="comentario" name="comentario" maxlength="120" rows="4"></textarea>
+                <small id="contador-comentario">120 caracteres restantes</small>
+                <small id="error-comentario" class="error-campo"></small>
+            </div>
+
+            <div class="campo campo-checkbox">
+                <input type="checkbox" id="coleccion" name="coleccion">
+                <label for="coleccion">Ejemplar de colección</label>
+                <small id="error-coleccion" class="error-campo"></small>
+            </div>
+
+            <div class="acciones-formulario">
+                <button type="submit" id="guardar-libro">Agregar libro</button>
+                <button type="button" id="cancelar-edicion" hidden>Cancelar</button>
+            </div>
+
+            <p id="mensaje-formulario" role="status" aria-live="polite"></p>
+        </form>
+    </section>
+
+    <!-- VISTA 4: RESUMEN Y AJUSTES -->
+    <section id="resumen" class="vista" hidden>
+        <h2>Resumen y ajustes</h2>
+
+        <div class="estadisticas">
+            <article class="tarjeta-estadistica">
+                <h3>Total de libros</h3>
+                <p id="total-libros">0</p>
+            </article>
+
+            <article class="tarjeta-estadistica">
+                <h3>Disponibles</h3>
+                <p id="total-disponibles">0</p>
+            </article>
+
+            <article class="tarjeta-estadistica">
+                <h3>Prestados</h3>
+                <p id="total-prestados">0</p>
+            </article>
+
+            <article class="tarjeta-estadistica">
+                <h3>Vencidos</h3>
+                <p id="total-vencidos">0</p>
+            </article>
+        </div>
+
+        <h3>Libros por género</h3>
+        <div id="estadisticas-genero"></div>
+
+        <h3>Preferencias</h3>
+
+        <div class="campo">
+            <label for="nombre-usuario">Tu nombre:</label>
+            <input type="text" id="nombre-usuario" maxlength="40">
+        </div>
+
+        <button type="button" id="guardar-nombre">Guardar nombre</button>
+        <button type="button" id="cambiar-tema">Cambiar tema</button>
+
+        <div class="zona-restablecer">
+            <h3>Restablecer biblioteca</h3>
+            <p>Esta opción recuperará los libros y préstamos iniciales.</p>
+            <button type="button" id="restablecer-biblioteca">Restablecer biblioteca</button>
+        </div>
+    </section>
+
+</main>
+
 
     <script src="js/data.js"></script>
     <script src="js/library.js"></script>
