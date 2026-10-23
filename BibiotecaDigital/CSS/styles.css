@@ -1,0 +1,560 @@
+
+/* ========================================
+   1. VARIABLES DE COLOR
+   ======================================== */
+
+:root {
+    --color-fondo: #f5f3ff;
+    --color-superficie: #ffffff;
+    --color-principal: #6c4ab6;
+    --color-principal-hover: #563795;
+    --color-secundario: #e9e1fa;
+    --color-texto: #29233b;
+    --color-texto-secundario: #655d75;
+    --color-borde: #ded7ec;
+    --color-error: #b42318;
+    --color-exito: #18794e;
+    --sombra: 0 4px 16px rgba(48, 35, 75, 0.08);
+}
+
+/* ========================================
+   2. CONFIGURACIÓN GENERAL
+   ======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1,
+h2,
+h3,
+p {
+    margin-top: 0;
+}
+
+h2 {
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+}
+
+h3 {
+    margin-top: 24px;
+    font-size: 1.15rem;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid #b59af7;
+    outline-offset: 3px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+/* ========================================
+   3. ENCABEZADO
+   ======================================== */
+
+.encabezado {
+    background-color: var(--color-superficie);
+    border-bottom: 1px solid var(--color-borde);
+    padding: 22px 5%;
+    box-shadow: var(--sombra);
+}
+
+.marca {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+}
+
+.icono-libro {
+    font-size: 2.8rem;
+}
+
+.marca h1 {
+    color: var(--color-principal);
+    margin-bottom: 2px;
+    font-size: 1.9rem;
+}
+
+.marca p {
+    color: var(--color-texto-secundario);
+    margin-bottom: 0;
+}
+
+/* ========================================
+   4. MENÚ DE NAVEGACIÓN
+   ======================================== */
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.enlace-nav {
+    text-decoration: none;
+    color: var(--color-texto-secundario);
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    transition:
+        background-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease;
+}
+
+.enlace-nav:hover {
+    background-color: var(--color-secundario);
+    color: var(--color-principal);
+    transform: translateY(-2px);
+}
+
+.enlace-nav.activo {
+    background-color: var(--color-principal);
+    color: #ffffff;
+}
+
+/* ========================================
+   5. CONTENIDO PRINCIPAL Y VISTAS
+   ======================================== */
+
+main {
+    width: min(1200px, 92%);
+    margin: 32px auto;
+}
+
+.vista {
+    background-color: var(--color-superficie);
+    padding: 28px;
+    border: 1px solid var(--color-borde);
+    border-radius: 18px;
+    box-shadow: var(--sombra);
+}
+
+.vista.activa {
+    animation: aparecer 0.35s ease;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========================================
+   6. CAMPOS DE BÚSQUEDA Y FILTROS
+   ======================================== */
+
+.herramientas-catalogo {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 16px;
+    margin: 24px 0 16px;
+}
+
+label {
+    font-weight: bold;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 11px 12px;
+    color: var(--color-texto);
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: 9px;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--color-texto-secundario);
+    opacity: 1;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.filtros-estado {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+/* ========================================
+   7. BOTONES
+   ======================================== */
+
+button {
+    padding: 10px 16px;
+    border: 1px solid var(--color-principal);
+    border-radius: 9px;
+    background-color: var(--color-principal);
+    color: #ffffff;
+    font-weight: bold;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+button:hover:not(:disabled) {
+    background-color: var(--color-principal-hover);
+    transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+#cancelar-edicion {
+    background-color: var(--color-superficie);
+    color: var(--color-principal);
+}
+
+#cancelar-edicion:hover {
+    background-color: var(--color-secundario);
+}
+
+/* ========================================
+   8. TARJETAS DE LIBROS
+   ======================================== */
+
+.rejilla-libros {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.tarjeta-libro {
+    background-color: var(--color-superficie);
+    border: 1px solid var(--color-borde);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--sombra);
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.tarjeta-libro:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 9px 22px rgba(48, 35, 75, 0.14);
+    border-color: var(--color-principal);
+}
+
+.tarjeta-libro h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+    overflow-wrap: anywhere;
+}
+
+.tarjeta-libro p {
+    margin-bottom: 8px;
+    color: var(--color-texto-secundario);
+}
+
+.tarjeta-libro.prestado {
+    border-left: 5px solid #d97706;
+}
+
+.tarjeta-libro.disponible {
+    border-left: 5px solid #21865b;
+}
+
+.tarjeta-libro.coleccion {
+    border-left: 5px solid var(--color-principal);
+}
+
+.estado-libro {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    background-color: var(--color-secundario);
+    color: var(--color-principal);
+}
+
+.tarjeta-libro .acciones-libro {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.acciones-libro button {
+    flex: 1 1 auto;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+}
+
+/* ========================================
+   9. FORMULARIO
+   ======================================== */
+
+#form-libro {
+    max-width: 720px;
+    margin-top: 24px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 20px;
+}
+
+.campo-checkbox {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    align-items: center;
+}
+
+.campo-checkbox input {
+    width: 18px;
+    height: 18px;
+}
+
+.campo-checkbox label {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.campo-checkbox input {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.error-campo {
+    color: var(--color-error);
+    font-size: 0.9rem;
+}
+
+.acciones-formulario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#mensaje-formulario,
+#mensaje-catalogo,
+#mensaje-prestamos {
+    margin-top: 12px;
+}
+
+/* ========================================
+   10. PRÉSTAMOS E HISTORIAL
+   ======================================== */
+
+#lista-prestamos,
+#historial-prestamos {
+    display: grid;
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.tarjeta-prestamo {
+    padding: 18px;
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    background-color: var(--color-superficie);
+}
+
+.tarjeta-prestamo.vencido {
+    border-left: 5px solid var(--color-error);
+}
+
+.tarjeta-prestamo h3 {
+    margin-top: 0;
+}
+
+.estado-vencido {
+    color: var(--color-error);
+    font-weight: bold;
+}
+
+.estado-devuelto {
+    color: var(--color-exito);
+    font-weight: bold;
+}
+
+/* ========================================
+   11. ESTADÍSTICAS
+   ======================================== */
+
+.estadisticas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+}
+
+.tarjeta-estadistica {
+    padding: 20px;
+    border-radius: 14px;
+    background-color: var(--color-secundario);
+    text-align: center;
+}
+
+.tarjeta-estadistica h3 {
+    margin-top: 0;
+    font-size: 1rem;
+}
+
+.tarjeta-estadistica p {
+    color: var(--color-principal);
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.zona-restablecer {
+    margin-top: 30px;
+    padding: 20px;
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+}
+
+#restablecer-biblioteca {
+    background-color: #a12a35;
+    border-color: #a12a35;
+}
+
+/* ========================================
+   12. TEMA OSCURO
+   ======================================== */
+
+body.oscuro {
+    --color-fondo: #171421;
+    --color-superficie: #242032;
+    --color-principal: #bba0ff;
+    --color-principal-hover: #d0bdff;
+    --color-secundario: #39304f;
+    --color-texto: #f5f1ff;
+    --color-texto-secundario: #d0c8df;
+    --color-borde: #494057;
+    --color-error: #ff9b96;
+    --color-exito: #7ce0ac;
+}
+
+body.oscuro .enlace-nav.activo {
+    color: #211832;
+}
+
+body.oscuro button {
+    color: #211832;
+}
+
+body.oscuro #cancelar-edicion {
+    color: var(--color-principal);
+}
+
+body.oscuro #restablecer-biblioteca {
+    color: #ffffff;
+}
+
+body.oscuro .tarjeta-libro.prestado {
+    border-left-color: #fbbf24;
+}
+
+body.oscuro .tarjeta-libro.disponible {
+    border-left-color: #7ce0ac;
+}
+
+/* ========================================
+   13. DISEÑO RESPONSIVO
+   ======================================== */
+
+@media (max-width: 900px) {
+    .rejilla-libros {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .estadisticas {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .encabezado {
+        padding: 18px 4%;
+    }
+
+    .marca h1 {
+        font-size: 1.45rem;
+    }
+
+    nav {
+        flex-direction: column;
+    }
+
+    .enlace-nav {
+        display: block;
+    }
+
+    main {
+        width: 94%;
+        margin: 18px auto;
+    }
+
+    .vista {
+        padding: 18px;
+    }
+
+    .herramientas-catalogo,
+    .rejilla-libros,
+    .estadisticas {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros-estado button {
+        flex: 1;
+    }
+}
