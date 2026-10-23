@@ -32,6 +32,12 @@ function actualizarContadorPrestamos(datos) {
 function renderizarCatalogo(datos) {
     contenedorLibros.replaceChildren();
 
+const librosVisibles = obtenerLibrosFiltrados(
+    datos,
+    preferenciasCatalogo
+);
+
+
     datos.libros.forEach(function (libro) {
         const tarjeta = document.createElement("article");
         tarjeta.className = "tarjeta-libro";
@@ -126,10 +132,10 @@ function renderizarCatalogo(datos) {
     });
 
     document.getElementById("contador-libros").textContent =
-        "Mostrando " + datos.libros.length +
-        " de " + datos.libros.length + " libros";
+    "Mostrando " + librosVisibles.length +
+    " de " + datos.libros.length + " libros";
 
-    actualizarContadorPrestamos(datos);
+    
 }
 
 function mostrarMensajeFormulario(mensaje, esError = false) {
