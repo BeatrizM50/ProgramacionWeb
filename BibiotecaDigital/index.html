@@ -13,10 +13,35 @@
 </head>
 <body>
 
-    <header>
-        <h1>Biblioteca Digital</h1>
-        <p>Tu espacio para organizar y descubrir libros.</p>
-    </header>
+    
+<header class="encabezado">
+    <div class="marca">
+        <span class="icono-libro" aria-hidden="true">📚</span>
+        <div>
+            <h1>Biblioteca Digital</h1>
+            <p>Tu espacio para organizar y descubrir libros.</p>
+        </div>
+    </div>
+
+    <nav aria-label="Navegación principal">
+        <a href="#catalogo" class="enlace-nav activo" data-vista="catalogo">
+            Catálogo
+        </a>
+
+        <a href="#prestamos" class="enlace-nav" data-vista="prestamos">
+            Mis préstamos (<span id="contador-prestamos">0</span>)
+        </a>
+
+        <a href="#formulario" class="enlace-nav" data-vista="formulario">
+            Agregar libro
+        </a>
+
+        <a href="#resumen" class="enlace-nav" data-vista="resumen">
+            Resumen y ajustes
+        </a>
+    </nav>
+</header>
+
 
     <script src="js/data.js"></script>
     <script src="js/library.js"></script>
