@@ -74,3 +74,37 @@ function guardarPreferenciasCatalogo(preferencias) {
         JSON.stringify(preferencias)
     );
 }
+
+
+// Preferencias del usuario: nombre y tema oscuro.
+const CLAVE_PREFERENCIAS_USUARIO = "bibliotecaDigitalPreferenciasUsuario";
+
+function cargarPreferenciasUsuario() {
+    const guardadas = localStorage.getItem(CLAVE_PREFERENCIAS_USUARIO);
+
+    const predeterminadas = {
+        nombre: "",
+        oscuro: false
+    };
+
+    if (guardadas === null) {
+        return predeterminadas;
+    }
+
+    try {
+        return {
+            ...predeterminadas,
+            ...JSON.parse(guardadas)
+        };
+    } catch (error) {
+        console.error("No se pudieron cargar las preferencias del usuario.", error);
+        return predeterminadas;
+    }
+}
+
+function guardarPreferenciasUsuario(preferencias) {
+    localStorage.setItem(
+        CLAVE_PREFERENCIAS_USUARIO,
+        JSON.stringify(preferencias)
+    );
+}
