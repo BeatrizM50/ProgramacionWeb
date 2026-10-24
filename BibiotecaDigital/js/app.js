@@ -137,25 +137,10 @@ document.addEventListener("DOMContentLoaded", function () {
             mostrarMensajeFormulario(resultado.mensaje, true);
 
             // Mostrar el error debajo del campo que corresponda.
-            if (resultado.mensaje.includes("título")) {
-                mostrarErrorCampo("titulo", resultado.mensaje);
-                document.getElementById("titulo").focus();
-            } else if (resultado.mensaje.includes("autor")) {
-                mostrarErrorCampo("autor", resultado.mensaje);
-                document.getElementById("autor").focus();
-            } else if (resultado.mensaje.includes("año")) {
-                mostrarErrorCampo("anio", resultado.mensaje);
-                document.getElementById("anio").focus();
-            } else if (resultado.mensaje.includes("género")) {
-                mostrarErrorCampo("genero", resultado.mensaje);
-                document.getElementById("genero").focus();
-            } else if (resultado.mensaje.includes("comentario")) {
-                mostrarErrorCampo("comentario", resultado.mensaje);
-                campoComentario.focus();
-            } else {
-                mostrarErrorCampo("titulo", resultado.mensaje);
-                document.getElementById("titulo").focus();
-            }
+            const campoConError = resultado.campo || "titulo";
+
+            mostrarErrorCampo(campoConError, resultado.mensaje);
+            document.getElementById(campoConError).focus();
 
             return;
         }
@@ -224,18 +209,28 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        if (accion === "devolver") {
-            const resultado = devolverLibro(idLibro, datosBiblioteca);
+        
+if (accion === "devolver") {
+    const resultado = devolverLibro(idLibro, datosBiblioteca);
 
-            mostrarMensajeCatalogo(resultado.mensaje);
+    mostrarMensajeCatalogo(resultado.mensaje);
 
-            if (resultado.ok) {
-                guardarDatos(datosBiblioteca);
-                renderizarCatalogo(datosBiblioteca);
-            }
-        }
+    if (resultado.ok) {
+        guardarDatos(datosBiblioteca);
+        renderizarCatalogo(datosBiblioteca);
+        renderizarPrestamos(datosBiblioteca);
+    }
+}
+
 
         if (accion === "eliminar") {
+            const libroAEliminar = buscarLibroPorId(idLibro, datosBiblioteca);
+
+            if (libroAEliminar &&
+                !window.confirm('¿Eliminar "' + libroAEliminar.titulo + '"?')) {
+                return;
+            }
+
             const resultado = eliminarLibro(idLibro, datosBiblioteca);
 
             mostrarMensajeCatalogo(resultado.mensaje);
@@ -247,9 +242,91 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (accion === "editar") {
-            mostrarMensajeCatalogo(
-                "En el siguiente paso conectaremos el botón Editar con el formulario."
-            );
+            const libro = buscarLibroPorId(idLibro, datosBiblioteca);
+
+            if (!libro) {
+                return;
+            }
+
+            // Primero se abre la vista (esto reinicia el formulario)
+            // y después se cargan los datos del libro.
+            document.querySelector('[data-vista="formulario"]').click();
+            idLibroEditando = idLibro;
+            prepararFormulario(libro);
         }
     });
+
+    // Registrar devoluciones desde la vista "Mis préstamos".
+    document.getElementById("lista-prestamos")
+        .addEventListener("click", function (evento) {
+            const boton = evento.target.closest('button[data-accion="devolver"]');
+
+            if (!boton) {
+                return;
+            }
+
+            const resultado = devolverLibro(
+                Number(boton.dataset.id),
+                datosBiblioteca
+            );
+
+            document.getElementById("mensaje-prestamos").textContent =
+                resultado.mensaje;
+
+            if (resultado.ok) {
+                guardarDatos(datosBiblioteca);
+                renderizarCatalogo(datosBiblioteca);
+            }
+        });
+
+
+    // ----- Resumen y ajustes -----
+
+    // El año máximo del formulario es siempre el año actual.
+    document.getElementById("anio").max = ANIO_ACTUAL;
+
+    const preferenciasUsuario = cargarPreferenciasUsuario();
+    const campoNombre = document.getElementById("nombre-usuario");
+
+    // Aplica el nombre y el tema guardados.
+    function aplicarPreferenciasUsuario() {
+        document.body.classList.toggle("oscuro", preferenciasUsuario.oscuro);
+
+        campoNombre.value = preferenciasUsuario.nombre;
+
+        document.getElementById("saludo").textContent =
+            preferenciasUsuario.nombre
+                ? "Hola, " + preferenciasUsuario.nombre +
+                  ". Tu espacio para organizar y descubrir libros."
+                : "Tu espacio para organizar y descubrir libros.";
+    }
+
+    aplicarPreferenciasUsuario();
+
+    document.getElementById("guardar-nombre")
+        .addEventListener("click", function () {
+            preferenciasUsuario.nombre = campoNombre.value.trim();
+            guardarPreferenciasUsuario(preferenciasUsuario);
+            aplicarPreferenciasUsuario();
+        });
+
+    document.getElementById("cambiar-tema")
+        .addEventListener("click", function () {
+            preferenciasUsuario.oscuro = !preferenciasUsuario.oscuro;
+            guardarPreferenciasUsuario(preferenciasUsuario);
+            aplicarPreferenciasUsuario();
+        });
+
+    document.getElementById("restablecer-biblioteca")
+        .addEventListener("click", function () {
+            if (!window.confirm("Se perderán los cambios y volverán los libros iniciales. ¿Continuar?")) {
+                return;
+            }
+
+            datosBiblioteca = restablecerDatos();
+            renderizarCatalogo(datosBiblioteca);
+
+            document.querySelector('[data-vista="catalogo"]').click();
+            mostrarMensajeCatalogo("Biblioteca restablecida correctamente.");
+        });
 });
