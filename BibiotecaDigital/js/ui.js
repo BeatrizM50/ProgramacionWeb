@@ -135,7 +135,9 @@ const librosVisibles = obtenerLibrosFiltrados(
     "Mostrando " + librosVisibles.length +
     " de " + datos.libros.length + " libros";
 
-    
+    actualizarContadorPrestamos(datos);
+    renderizarPrestamos(datos);
+
 }
 
 function mostrarMensajeFormulario(mensaje, esError = false) {
@@ -213,3 +215,121 @@ function actualizarContadorComentario() {
     document.getElementById("contador-comentario").textContent =
         restantes + " caracteres restantes";
 }
+
+
+function renderizarPrestamos(datos) {
+    const contenedorActivos = document.getElementById("lista-prestamos");
+    const contenedorHistorial = document.getElementById("historial-prestamos");
+
+    contenedorActivos.replaceChildren();
+    contenedorHistorial.replaceChildren();
+
+    // Seleccionar y ordenar los préstamos activos.
+    const activos = datos.prestamos
+        .filter(prestamoActivo)
+        .slice()
+        .sort(function (a, b) {
+            return a.fechaLimite.localeCompare(b.fechaLimite);
+        });
+
+    if (activos.length === 0) {
+        contenedorActivos.append(
+            crearElemento("p", "No hay préstamos activos.")
+        );
+    }
+
+    activos.forEach(function (prestamo) {
+        const tarjeta = document.createElement("article");
+        tarjeta.className = "tarjeta-libro";
+
+        const libro = buscarLibroPorId(prestamo.idLibro, datos);
+
+        if (!libro) {
+            return;
+        }
+
+        tarjeta.append(
+            crearElemento("h4", libro.titulo),
+            crearElemento("p", "Persona: " + prestamo.persona),
+            crearElemento("p", "Fecha de préstamo: " + prestamo.fechaPrestamo),
+            crearElemento("p", "Fecha límite: " + prestamo.fechaLimite)
+        );
+
+        if (prestamoVencido(prestamo)) {
+            tarjeta.append(
+                crearElemento(
+                    "p",
+                    "Vencido por " + calcularDiasRetraso(prestamo) + " día(s)",
+                    "etiqueta-vencido"
+                )
+            );
+        } else {
+            tarjeta.append(
+                crearElemento("p", "Dentro del plazo", "etiqueta-estado")
+            );
+        }
+
+        const botonDevolver = crearElemento("button", "Registrar devolución");
+        botonDevolver.type = "button";
+        botonDevolver.dataset.accion = "devolver";
+        botonDevolver.dataset.id = prestamo.idLibro;
+
+        tarjeta.append(botonDevolver);
+        contenedorActivos.append(tarjeta);
+    });
+
+    // El historial contiene solamente préstamos ya devueltos.
+    const historial = datos.prestamos
+        .filter(function (prestamo) {
+            return !prestamoActivo(prestamo);
+        })
+        .slice()
+        .sort(function (a, b) {
+            return b.fechaDevolucion.localeCompare(a.fechaDevolucion);
+        });
+
+    if (historial.length === 0) {
+        contenedorHistorial.append(
+            crearElemento("p", "Todavía no hay devoluciones registradas.")
+        );
+    }
+
+    historial.forEach(function (prestamo) {
+        const tarjeta = document.createElement("article");
+        tarjeta.className = "tarjeta-libro";
+
+        const libro = buscarLibroPorId(prestamo.idLibro, datos);
+
+        if (!libro) {
+            return;
+        }
+
+        tarjeta.append(
+            crearElemento("h4", libro.titulo),
+            crearElemento("p", "Persona: " + prestamo.persona),
+            crearElemento("p", "Fecha de préstamo: " + prestamo.fechaPrestamo),
+            crearElemento("p", "Fecha límite: " + prestamo.fechaLimite),
+            crearElemento("p", "Fecha de devolución: " + prestamo.fechaDevolucion)
+        );
+
+        if (prestamo.fechaDevolucion > prestamo.fechaLimite) {
+            const limite = new Date(prestamo.fechaLimite + "T12:00:00");
+            const devolucion = new Date(prestamo.fechaDevolucion + "T12:00:00");
+
+            const dias = Math.round(
+                (devolucion - limite) / (1000 * 60 * 60 * 24)
+            );
+
+            tarjeta.append(
+                crearElemento("p", "Devuelto con " + dias + " día(s) de retraso")
+            );
+        } else {
+            tarjeta.append(
+                crearElemento("p", "Devuelto a tiempo", "etiqueta-estado")
+            );
+        }
+
+        contenedorHistorial.append(tarjeta);
+    });
+}
+
