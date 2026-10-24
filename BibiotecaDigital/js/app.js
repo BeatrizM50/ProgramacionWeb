@@ -2,14 +2,14 @@
 "use strict";
 
 let datosBiblioteca = cargarDatos();
+let preferenciasCatalogo = cargarPreferenciasCatalogo();
 
 document.addEventListener("DOMContentLoaded", function () {
     renderizarCatalogo(datosBiblioteca);
 
     
     // Recuperar las preferencias del catálogo.
-    let preferenciasCatalogo = cargarPreferenciasCatalogo();
-
+   
     const campoBusqueda = document.getElementById("buscar-libro");
     const filtroGenero = document.getElementById("filtro-genero");
     const ordenarPor = document.getElementById("ordenar-por");
