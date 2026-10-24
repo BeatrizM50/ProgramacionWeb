@@ -38,7 +38,13 @@ const librosVisibles = obtenerLibrosFiltrados(
 );
 
 
-    datos.libros.forEach(function (libro) {
+    if (librosVisibles.length === 0) {
+        contenedorLibros.append(
+            crearElemento("p", "No se encontraron libros con esos filtros.")
+        );
+    }
+
+    librosVisibles.forEach(function (libro) {
         const tarjeta = document.createElement("article");
         tarjeta.className = "tarjeta-libro";
 
@@ -48,6 +54,15 @@ const librosVisibles = obtenerLibrosFiltrados(
         const genero = crearElemento("p", "Género: " + libro.genero);
 
         tarjeta.append(titulo, autor, anio, genero);
+
+        // Clase para el borde de color según el estado.
+        if (libro.coleccion) {
+            tarjeta.classList.add("coleccion");
+        } else if (buscarPrestamoActivo(libro.id, datos.prestamos)) {
+            tarjeta.classList.add("prestado");
+        } else {
+            tarjeta.classList.add("disponible");
+        }
 
         if (libro.coleccion) {
             tarjeta.append(
@@ -137,6 +152,7 @@ const librosVisibles = obtenerLibrosFiltrados(
 
     actualizarContadorPrestamos(datos);
     renderizarPrestamos(datos);
+    renderizarResumen(datos);
 
 }
 
@@ -333,3 +349,37 @@ function renderizarPrestamos(datos) {
     });
 }
 
+
+// Calcula y muestra las estadísticas de la vista Resumen.
+function renderizarResumen(datos) {
+    const disponibles = datos.libros.filter(function (libro) {
+        return libroDisponible(libro, datos);
+    }).length;
+
+    document.getElementById("total-libros").textContent = datos.libros.length;
+    document.getElementById("total-disponibles").textContent = disponibles;
+    document.getElementById("total-prestados").textContent =
+        contarPrestamosActivos(datos.prestamos);
+    document.getElementById("total-vencidos").textContent =
+        contarPrestamosVencidos(datos.prestamos);
+
+    // Contar cuántos libros hay de cada género.
+    const conteo = {};
+
+    datos.libros.forEach(function (libro) {
+        conteo[libro.genero] = (conteo[libro.genero] || 0) + 1;
+    });
+
+    const contenedorGeneros = document.getElementById("estadisticas-genero");
+    contenedorGeneros.replaceChildren();
+
+    Object.keys(conteo)
+        .sort(function (a, b) {
+            return a.localeCompare(b, "es");
+        })
+        .forEach(function (genero) {
+            contenedorGeneros.append(
+                crearElemento("p", genero + ": " + conteo[genero] + " libro(s)")
+            );
+        });
+}
