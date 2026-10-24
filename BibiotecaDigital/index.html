@@ -20,7 +20,7 @@
         <span class="icono-libro" aria-hidden="true">📚</span>
         <div>
             <h1>Biblioteca Digital</h1>
-            <p id="saludo">Tu espacio para organizar y descubrir libros.</p>
+            <p>Tu espacio para organizar y descubrir libros.</p>
         </div>
     </div>
 
@@ -40,6 +40,8 @@
         <a href="#resumen" class="enlace-nav" data-vista="resumen">
             Resumen y ajustes
         </a>
+
+        <span id="saludo-usuario" class="saludo-usuario"></span>
     </nav>
 </header>
 
@@ -53,30 +55,38 @@
         <div id="mensaje-catalogo" role="status" aria-live="polite"></div>
 
         <div class="herramientas-catalogo">
-            <label for="buscar-libro">Buscar por título o autor:</label>
-            <input
-                type="search"
-                id="buscar-libro"
-                placeholder="Escribe el título o autor..."
-            >
+            <div class="campo">
+                <label for="buscar-libro">Buscar por título o autor:</label>
+                <input
+                    type="search"
+                    id="buscar-libro"
+                    placeholder="Escribe el título o autor..."
+                >
+            </div>
 
-            <label for="filtro-genero">Género:</label>
-            <select id="filtro-genero">
-                <option value="todos">Todos los géneros</option>
-            </select>
+            <div class="campo">
+                <label for="filtro-genero">Género:</label>
+                <select id="filtro-genero">
+                    <option value="todos">Todos los géneros</option>
+                </select>
+            </div>
 
-            <label for="ordenar-por">Ordenar por:</label>
-            <select id="ordenar-por">
-                <option value="titulo">Título</option>
-                <option value="autor">Autor</option>
-                <option value="anio">Año</option>
-            </select>
+            <div class="campo">
+                <label for="ordenar-por">Ordenar por:</label>
+                <select id="ordenar-por">
+                    <option value="titulo">Título</option>
+                    <option value="autor">Autor</option>
+                    <option value="anio">Año</option>
+                </select>
+            </div>
 
-            <label for="direccion-orden">Dirección:</label>
-            <select id="direccion-orden">
-                <option value="asc">Ascendente</option>
-                <option value="desc">Descendente</option>
-            </select>
+            <div class="campo">
+                <label for="direccion-orden">Dirección:</label>
+                <select id="direccion-orden">
+                    <option value="asc">Ascendente</option>
+                    <option value="desc">Descendente</option>
+                </select>
+            </div>
         </div>
 
         <div class="filtros-estado" aria-label="Filtrar libros por estado">
@@ -210,6 +220,38 @@
 
 </main>
 
+
+    <!-- MODAL: PRESTAR UN LIBRO -->
+    <div id="modal-prestar" class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-prestar" hidden>
+        <form id="form-prestar" class="modal-contenido" novalidate>
+            <h2 id="titulo-modal-prestar">Prestar libro</h2>
+            <p id="texto-modal-prestar"></p>
+
+            <div class="campo">
+                <label for="persona-prestamo">Nombre de la persona:</label>
+                <input type="text" id="persona-prestamo" autocomplete="off">
+                <small id="error-persona" class="error-campo"></small>
+            </div>
+
+            <div class="acciones-formulario">
+                <button type="submit">Prestar</button>
+                <button type="button" id="cancelar-prestar" class="boton-secundario">Cancelar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- MODAL: CONFIRMAR ELIMINACIÓN -->
+    <div id="modal-eliminar" class="modal" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-eliminar" hidden>
+        <div class="modal-contenido">
+            <h2 id="titulo-modal-eliminar">Eliminar libro</h2>
+            <p id="texto-modal-eliminar"></p>
+
+            <div class="acciones-formulario">
+                <button type="button" id="cancelar-eliminar" class="boton-secundario">Cancelar</button>
+                <button type="button" id="confirmar-eliminar" class="boton-peligro">Eliminar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="js/data.js"></script>
     <script src="js/library.js"></script>

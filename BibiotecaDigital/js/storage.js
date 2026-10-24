@@ -17,7 +17,12 @@ function cargarDatos() {
 
     if (datosGuardados !== null) {
         try {
-            return JSON.parse(datosGuardados);
+            const datos = JSON.parse(datosGuardados);
+
+            // Solo se aceptan datos con la estructura esperada.
+            if (datos && Array.isArray(datos.libros) && Array.isArray(datos.prestamos)) {
+                return datos;
+            }
         } catch (error) {
             console.error("No se pudieron leer los datos guardados.", error);
         }

@@ -5,9 +5,17 @@
 const contenedorLibros = document.getElementById("lista-libros");
 
 // Muestra un mensaje debajo del catálogo.
-function mostrarMensajeCatalogo(mensaje) {
-    const elemento = document.getElementById("mensaje-catalogo");
+function mostrarMensajeCatalogo(mensaje, esError = false) {
+    mostrarMensajePagina("mensaje-catalogo", mensaje, esError);
+}
+
+// Escribe un mensaje (de éxito o de error) en un elemento de la página.
+function mostrarMensajePagina(idElemento, mensaje, esError = false) {
+    const elemento = document.getElementById(idElemento);
+
     elemento.textContent = mensaje;
+    elemento.classList.toggle("mensaje-error", esError && mensaje !== "");
+    elemento.classList.toggle("mensaje-exito", !esError && mensaje !== "");
 }
 
 // Crea un elemento HTML con texto seguro.
@@ -28,15 +36,130 @@ function actualizarContadorPrestamos(datos) {
         contarPrestamosActivos(datos.prestamos);
 }
 
-// Dibuja las tarjetas de los libros.
+// Convierte AAAA-MM-DD en DD/MM/AAAA.
+function formatearFecha(fecha) {
+    const partes = fecha.split("-");
+
+    return partes[2] + "/" + partes[1] + "/" + partes[0];
+}
+
+// Crea un botón de acción para una tarjeta.
+function crearBoton(texto, accion, idLibro, deshabilitado = false) {
+    const boton = crearElemento("button", texto);
+
+    boton.type = "button";
+    boton.dataset.accion = accion;
+    boton.dataset.id = idLibro;
+    boton.disabled = deshabilitado;
+
+    return boton;
+}
+
+// Crea la tarjeta de un libro a partir de los datos.
+function crearTarjetaLibro(libro, datos) {
+    const tarjeta = document.createElement("article");
+    tarjeta.className = "tarjeta-libro";
+
+    tarjeta.append(
+        crearElemento("h3", libro.titulo),
+        crearElemento("p", "Autor: " + libro.autor),
+        crearElemento("p", "Año: " + libro.anio),
+        crearElemento("p", "Género: " + libro.genero)
+    );
+
+    const prestamo = buscarPrestamoActivo(libro.id, datos.prestamos);
+    const acciones = document.createElement("div");
+    acciones.className = "acciones-libro";
+
+    if (libro.coleccion) {
+        tarjeta.classList.add("coleccion");
+        tarjeta.append(crearElemento("p", "De colección", "etiqueta-estado"));
+        acciones.append(crearBoton("Prestar", "prestar", libro.id, true));
+    } else if (prestamo) {
+        tarjeta.classList.add("prestado");
+        tarjeta.append(
+            crearElemento("p", "Prestado", "etiqueta-estado"),
+            crearElemento("p", "Prestado a " + prestamo.persona),
+            crearElemento("p", "Devolver antes del " + formatearFecha(prestamo.fechaLimite))
+        );
+
+        if (prestamoVencido(prestamo)) {
+            tarjeta.classList.add("vencido");
+            tarjeta.append(
+                crearElemento(
+                    "p",
+                    "Vencido: " + calcularDiasRetraso(prestamo) + " día(s) de retraso",
+                    "etiqueta-vencido"
+                )
+            );
+        }
+
+        acciones.append(crearBoton("Devolver", "devolver", libro.id));
+    } else {
+        tarjeta.classList.add("disponible");
+        tarjeta.append(crearElemento("p", "Disponible", "etiqueta-estado"));
+        acciones.append(crearBoton("Prestar", "prestar", libro.id));
+    }
+
+    acciones.append(
+        crearBoton("Editar", "editar", libro.id),
+        crearBoton("Eliminar", "eliminar", libro.id)
+    );
+
+    tarjeta.append(acciones);
+
+    return tarjeta;
+}
+
+// Rehace el selector de género con los géneros que existen en los libros.
+function actualizarFiltroGenero(datos) {
+    const filtro = document.getElementById("filtro-genero");
+
+    const generos = [...new Set(datos.libros.map(function (libro) {
+        return libro.genero;
+    }))].sort(function (a, b) {
+        return a.localeCompare(b, "es");
+    });
+
+    filtro.replaceChildren();
+
+    [["todos", "Todos los géneros"]]
+        .concat(generos.map(function (genero) {
+            return [genero, genero];
+        }))
+        .forEach(function (par) {
+            const opcion = document.createElement("option");
+            opcion.value = par[0];
+            opcion.textContent = par[1];
+            filtro.append(opcion);
+        });
+
+    // Si el género elegido ya no existe, se vuelve a "todos".
+    if (!generos.includes(preferenciasCatalogo.genero)) {
+        preferenciasCatalogo.genero = "todos";
+    }
+
+    filtro.value = preferenciasCatalogo.genero;
+}
+
+// Marca el botón de filtro de estado que está activo.
+function actualizarBotonesFiltro() {
+    document.querySelectorAll("[data-filtro]").forEach(function (boton) {
+        const activo = boton.dataset.filtro === preferenciasCatalogo.estado;
+
+        boton.classList.toggle("activo", activo);
+        boton.setAttribute("aria-pressed", String(activo));
+    });
+}
+
+// Dibuja el catálogo y todo lo que depende de los datos.
 function renderizarCatalogo(datos) {
+    actualizarFiltroGenero(datos);
+    actualizarBotonesFiltro();
+
     contenedorLibros.replaceChildren();
 
-const librosVisibles = obtenerLibrosFiltrados(
-    datos,
-    preferenciasCatalogo
-);
-
+    const librosVisibles = obtenerLibrosFiltrados(datos, preferenciasCatalogo);
 
     if (librosVisibles.length === 0) {
         contenedorLibros.append(
@@ -45,115 +168,45 @@ const librosVisibles = obtenerLibrosFiltrados(
     }
 
     librosVisibles.forEach(function (libro) {
-        const tarjeta = document.createElement("article");
-        tarjeta.className = "tarjeta-libro";
-
-        const titulo = crearElemento("h3", libro.titulo);
-        const autor = crearElemento("p", "Autor: " + libro.autor);
-        const anio = crearElemento("p", "Año: " + libro.anio);
-        const genero = crearElemento("p", "Género: " + libro.genero);
-
-        tarjeta.append(titulo, autor, anio, genero);
-
-        // Clase para el borde de color según el estado.
-        if (libro.coleccion) {
-            tarjeta.classList.add("coleccion");
-        } else if (buscarPrestamoActivo(libro.id, datos.prestamos)) {
-            tarjeta.classList.add("prestado");
-        } else {
-            tarjeta.classList.add("disponible");
-        }
-
-        if (libro.coleccion) {
-            tarjeta.append(
-                crearElemento("p", "Ejemplar de colección", "etiqueta-estado")
-            );
-        } else {
-            const prestamo = buscarPrestamoActivo(
-                libro.id,
-                datos.prestamos
-            );
-
-            if (prestamo) {
-                tarjeta.append(
-                    crearElemento(
-                        "p",
-                        "Prestado a: " + prestamo.persona
-                    ),
-                    crearElemento(
-                        "p",
-                        "Fecha límite: " + prestamo.fechaLimite
-                    )
-                );
-
-                if (prestamoVencido(prestamo)) {
-                    tarjeta.append(
-                        crearElemento(
-                            "p",
-                            "Vencido: " + calcularDiasRetraso(prestamo) +
-                            " día(s) de retraso",
-                            "etiqueta-vencido"
-                        )
-                    );
-                } else {
-                    tarjeta.append(
-                        crearElemento("p", "Estado: Prestado", "etiqueta-estado")
-                    );
-                }
-            } else {
-                tarjeta.append(
-                    crearElemento("p", "Estado: Disponible", "etiqueta-estado")
-                );
-            }
-        }
-
-        const acciones = document.createElement("div");
-        acciones.className = "acciones-libro";
-
-        if (!libro.coleccion) {
-            const prestamo = buscarPrestamoActivo(
-                libro.id,
-                datos.prestamos
-            );
-
-            if (prestamo) {
-                const botonDevolver = crearElemento("button", "Devolver");
-                botonDevolver.type = "button";
-                botonDevolver.dataset.accion = "devolver";
-                botonDevolver.dataset.id = libro.id;
-                acciones.append(botonDevolver);
-            } else {
-                const botonPrestar = crearElemento("button", "Prestar");
-                botonPrestar.type = "button";
-                botonPrestar.dataset.accion = "prestar";
-                botonPrestar.dataset.id = libro.id;
-                acciones.append(botonPrestar);
-            }
-        }
-
-        const botonEditar = crearElemento("button", "Editar");
-        botonEditar.type = "button";
-        botonEditar.dataset.accion = "editar";
-        botonEditar.dataset.id = libro.id;
-
-        const botonEliminar = crearElemento("button", "Eliminar");
-        botonEliminar.type = "button";
-        botonEliminar.dataset.accion = "eliminar";
-        botonEliminar.dataset.id = libro.id;
-
-        acciones.append(botonEditar, botonEliminar);
-        tarjeta.append(acciones);
-        contenedorLibros.append(tarjeta);
+        contenedorLibros.append(crearTarjetaLibro(libro, datos));
     });
 
     document.getElementById("contador-libros").textContent =
-    "Mostrando " + librosVisibles.length +
-    " de " + datos.libros.length + " libros";
+        "Mostrando " + librosVisibles.length +
+        " de " + datos.libros.length + " libros";
 
     actualizarContadorPrestamos(datos);
     renderizarPrestamos(datos);
     renderizarResumen(datos);
+}
 
+// ----- Modales -----
+
+let elementoAntesDelModal = null;
+
+// Devuelve el modal que está abierto, o null.
+function obtenerModalAbierto() {
+    return document.querySelector(".modal:not([hidden])");
+}
+
+function abrirModal(idModal, elementoConFoco) {
+    elementoAntesDelModal = document.activeElement;
+
+    document.getElementById(idModal).hidden = false;
+    elementoConFoco.focus();
+}
+
+function cerrarModal() {
+    document.querySelectorAll(".modal").forEach(function (modal) {
+        modal.hidden = true;
+    });
+
+    // Devolver el foco al botón que abrió el modal, si aún existe.
+    if (elementoAntesDelModal && document.contains(elementoAntesDelModal)) {
+        elementoAntesDelModal.focus();
+    }
+
+    elementoAntesDelModal = null;
 }
 
 function mostrarMensajeFormulario(mensaje, esError = false) {
@@ -267,11 +320,12 @@ function renderizarPrestamos(datos) {
         tarjeta.append(
             crearElemento("h4", libro.titulo),
             crearElemento("p", "Persona: " + prestamo.persona),
-            crearElemento("p", "Fecha de préstamo: " + prestamo.fechaPrestamo),
-            crearElemento("p", "Fecha límite: " + prestamo.fechaLimite)
+            crearElemento("p", "Fecha de préstamo: " + formatearFecha(prestamo.fechaPrestamo)),
+            crearElemento("p", "Fecha límite: " + formatearFecha(prestamo.fechaLimite))
         );
 
         if (prestamoVencido(prestamo)) {
+            tarjeta.classList.add("vencido");
             tarjeta.append(
                 crearElemento(
                     "p",
@@ -285,7 +339,7 @@ function renderizarPrestamos(datos) {
             );
         }
 
-        const botonDevolver = crearElemento("button", "Registrar devolución");
+        const botonDevolver = crearElemento("button", "Devolver");
         botonDevolver.type = "button";
         botonDevolver.dataset.accion = "devolver";
         botonDevolver.dataset.id = prestamo.idLibro;
@@ -323,9 +377,9 @@ function renderizarPrestamos(datos) {
         tarjeta.append(
             crearElemento("h4", libro.titulo),
             crearElemento("p", "Persona: " + prestamo.persona),
-            crearElemento("p", "Fecha de préstamo: " + prestamo.fechaPrestamo),
-            crearElemento("p", "Fecha límite: " + prestamo.fechaLimite),
-            crearElemento("p", "Fecha de devolución: " + prestamo.fechaDevolucion)
+            crearElemento("p", "Fecha de préstamo: " + formatearFecha(prestamo.fechaPrestamo)),
+            crearElemento("p", "Fecha límite: " + formatearFecha(prestamo.fechaLimite)),
+            crearElemento("p", "Fecha de devolución: " + formatearFecha(prestamo.fechaDevolucion))
         );
 
         if (prestamo.fechaDevolucion > prestamo.fechaLimite) {

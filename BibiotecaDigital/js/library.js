@@ -1,8 +1,8 @@
 
 "use strict";
 
-// Año máximo permitido para un libro: el año actual.
-const ANIO_ACTUAL = new Date().getFullYear();
+// Año máximo permitido para un libro (según el enunciado).
+const ANIO_MAXIMO = 2026;
 
 // Comprueba si un préstamo sigue activo.
 function prestamoActivo(prestamo) {
@@ -105,68 +105,70 @@ function existeLibroDuplicado(titulo, autor, datos, idExcluir = null) {
     });
 }
 
-// Valida los campos del formulario (se usa al agregar y al editar).
-// Devuelve null si todo está bien, o el campo que falló y su mensaje.
-function validarCamposLibro(campos) {
+// Valida los campos del formulario (al agregar y al editar).
+// Devuelve una lista con un error por cada campo incorrecto.
+function validarCamposLibro(campos, datos, idExcluir = null) {
+    const errores = [];
     const titulo = campos.titulo.trim();
     const autor = campos.autor.trim();
     const anio = Number(campos.anio);
     const comentario = (campos.comentario || "").trim();
 
     if (titulo.length < 3 || titulo.length > 60) {
-        return { campo: "titulo", mensaje: "El título debe tener entre 3 y 60 caracteres." };
+        errores.push({ campo: "titulo", mensaje: "El título debe tener entre 3 y 60 caracteres." });
     }
 
     if (!autor) {
-        return { campo: "autor", mensaje: "El autor es obligatorio." };
+        errores.push({ campo: "autor", mensaje: "El autor es obligatorio." });
     }
 
-    if (!Number.isInteger(anio) || anio < 1000 || anio > ANIO_ACTUAL) {
-        return { campo: "anio", mensaje: `El año debe estar entre 1000 y ${ANIO_ACTUAL}.` };
+    if (!Number.isInteger(anio) || anio < 1000 || anio > ANIO_MAXIMO) {
+        errores.push({ campo: "anio", mensaje: `El año debe estar entre 1000 y ${ANIO_MAXIMO}.` });
     }
 
     if (!campos.genero) {
-        return { campo: "genero", mensaje: "Debes seleccionar un género." };
+        errores.push({ campo: "genero", mensaje: "Debes seleccionar un género." });
     }
 
     if (comentario.length > 120) {
-        return { campo: "comentario", mensaje: "El comentario no puede superar los 120 caracteres." };
+        errores.push({ campo: "comentario", mensaje: "El comentario no puede superar los 120 caracteres." });
     }
 
-    return null;
+    // El duplicado solo se revisa si título y autor son válidos.
+    const tituloOAutorInvalido = errores.some(function (error) {
+        return error.campo === "titulo" || error.campo === "autor";
+    });
+
+    if (!tituloOAutorInvalido && existeLibroDuplicado(titulo, autor, datos, idExcluir)) {
+        errores.push({ campo: "titulo", mensaje: "Ya existe un libro con ese título y autor." });
+    }
+
+    // Un libro prestado no puede pasar a ser de colección.
+    if (idExcluir !== null &&
+        campos.coleccion &&
+        buscarPrestamoActivo(idExcluir, datos.prestamos) !== null) {
+        errores.push({ campo: "coleccion", mensaje: "No puedes convertir en libro de colección un libro prestado." });
+    }
+
+    return errores;
 }
 
 // Agrega un libro nuevo.
 function agregarLibro(datos, campos) {
-    const titulo = campos.titulo.trim();
-    const autor = campos.autor.trim();
-    const anio = Number(campos.anio);
-    const genero = campos.genero;
-    const comentario = (campos.comentario || "").trim();
-    const coleccion = Boolean(campos.coleccion);
+    const errores = validarCamposLibro(campos, datos);
 
-    const errorCampos = validarCamposLibro(campos);
-
-    if (errorCampos) {
-        return {
-            ok: false,
-            campo: errorCampos.campo,
-            mensaje: errorCampos.mensaje
-        };
-    }
-
-    if (existeLibroDuplicado(titulo, autor, datos)) {
-        return { ok: false, campo: "titulo", mensaje: "Ya existe un libro con ese título y autor." };
+    if (errores.length > 0) {
+        return { ok: false, errores: errores, mensaje: errores[0].mensaje };
     }
 
     const libro = {
         id: siguienteIdLibro(datos.libros),
-        titulo: titulo,
-        autor: autor,
-        anio: anio,
-        genero: genero,
-        coleccion: coleccion,
-        comentario: comentario
+        titulo: campos.titulo.trim(),
+        autor: campos.autor.trim(),
+        anio: Number(campos.anio),
+        genero: campos.genero,
+        coleccion: Boolean(campos.coleccion),
+        comentario: (campos.comentario || "").trim()
     };
 
     datos.libros.push(libro);
@@ -182,44 +184,18 @@ function editarLibro(idLibro, datos, campos) {
         return { ok: false, mensaje: "No se encontró el libro." };
     }
 
-    const titulo = campos.titulo.trim();
-    const autor = campos.autor.trim();
-    const anio = Number(campos.anio);
-    const genero = campos.genero;
-    const comentario = (campos.comentario || "").trim();
-    const coleccion = Boolean(campos.coleccion);
+    const errores = validarCamposLibro(campos, datos, idLibro);
 
-    const errorCampos = validarCamposLibro(campos);
-
-    if (errorCampos) {
-        return {
-            ok: false,
-            campo: errorCampos.campo,
-            mensaje: errorCampos.mensaje
-        };
+    if (errores.length > 0) {
+        return { ok: false, errores: errores, mensaje: errores[0].mensaje };
     }
 
-    if (existeLibroDuplicado(titulo, autor, datos, idLibro)) {
-        return { ok: false, campo: "titulo", mensaje: "Ya existe otro libro con ese título y autor." };
-    }
-
-    const tienePrestamoActivo =
-        buscarPrestamoActivo(idLibro, datos.prestamos) !== null;
-
-    if (tienePrestamoActivo && coleccion) {
-        return {
-            ok: false,
-            campo: "coleccion",
-            mensaje: "No puedes convertir en libro de colección un libro prestado."
-        };
-    }
-
-    libro.titulo = titulo;
-    libro.autor = autor;
-    libro.anio = anio;
-    libro.genero = genero;
-    libro.comentario = comentario;
-    libro.coleccion = coleccion;
+    libro.titulo = campos.titulo.trim();
+    libro.autor = campos.autor.trim();
+    libro.anio = Number(campos.anio);
+    libro.genero = campos.genero;
+    libro.comentario = (campos.comentario || "").trim();
+    libro.coleccion = Boolean(campos.coleccion);
 
     return { ok: true, mensaje: "Libro actualizado correctamente.", libro: libro };
 }
@@ -259,8 +235,12 @@ function prestarLibro(idLibro, persona, datos) {
         return { ok: false, mensaje: "No se encontró el libro." };
     }
 
-    if (!nombrePersona) {
-        return { ok: false, mensaje: "Debes indicar el nombre de la persona." };
+    if (nombrePersona.length < 2 || nombrePersona.length > 40) {
+        return {
+            ok: false,
+            campo: "persona",
+            mensaje: "El nombre debe tener entre 2 y 40 caracteres."
+        };
     }
 
     if (libro.coleccion) {
