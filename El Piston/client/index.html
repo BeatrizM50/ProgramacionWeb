@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111113">
+    <title>El Pistón · Taller automotriz</title>
+    <meta name="description" content="Sistema web de gestión para el taller automotriz El Pistón: órdenes, clientes, vehículos, inventario y reportes.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23d8232a'/%3E%3Cpath d='M18 44V22h13c7 0 11 3.8 11 9.5S38 41 31 41h-4v3h-9Zm9-11h4c2 0 3.2-1 3.2-2.5S33 28 31 28h-4v5Z' fill='white'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="assets/css/app.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+      <aside class="sidebar" id="sidebar">
+        <a class="brand" href="#/panel" aria-label="El Pistón, ir al panel">
+          <span class="brand__mark">EP</span>
+          <span class="brand__copy">
+            <strong>EL PISTÓN</strong>
+            <small>TALLER AUTOMOTRIZ</small>
+          </span>
+        </a>
+
+        <button class="btn btn--primary sidebar__cta" type="button" id="sidebar-new-order">
+          <span class="sidebar__cta-icon">+</span>
+          Nueva orden
+          <kbd>N</kbd>
+        </button>
+
+        <nav class="nav" aria-label="Navegación principal">
+          <p class="nav__label">Operación</p>
+          <a class="nav-link" href="#/panel" data-route="panel">
+            <span class="nav-link__icon" data-icon="panel"></span>
+            <span>Panel</span>
+          </a>
+          <a class="nav-link" href="#/ordenes" data-route="ordenes">
+            <span class="nav-link__icon" data-icon="orders"></span>
+            <span>Órdenes</span>
+            <span class="nav-badge" id="nav-orders-badge" hidden>0</span>
+          </a>
+          <a class="nav-link" href="#/clientes" data-route="clientes">
+            <span class="nav-link__icon" data-icon="clients"></span>
+            <span>Clientes</span>
+          </a>
+          <a class="nav-link" href="#/vehiculos" data-route="vehiculos">
+            <span class="nav-link__icon" data-icon="vehicle"></span>
+            <span>Vehículos</span>
+          </a>
+
+          <p class="nav__label">Taller</p>
+          <a class="nav-link" href="#/inventario" data-route="inventario">
+            <span class="nav-link__icon" data-icon="inventory"></span>
+            <span>Inventario</span>
+            <span class="nav-badge nav-badge--amber" id="nav-stock-badge" hidden>0</span>
+          </a>
+          <a class="nav-link" href="#/mecanicos" data-route="mecanicos">
+            <span class="nav-link__icon" data-icon="mechanics"></span>
+            <span>Mecánicos</span>
+          </a>
+          <a class="nav-link" href="#/reportes" data-route="reportes">
+            <span class="nav-link__icon" data-icon="reports"></span>
+            <span>Reportes</span>
+          </a>
+        </nav>
+
+        <div class="sidebar__spacer"></div>
+
+        <div class="shift-card">
+          <div class="shift-card__top">
+            <span class="live-dot"></span>
+            <strong>Taller abierto</strong>
+          </div>
+          <p>Lunes a sábado<br>8:00 a.m. — 6:00 p.m.</p>
+          <span class="shift-card__meta">2 mecánicos · 1 recepción</span>
+        </div>
+
+        <footer class="sidebar__foot">
+          <span>El Pistón · v1.0</span>
+          <span>PocketBase + JS</span>
+        </footer>
+      </aside>
+
+      <div class="app-main">
+        <header class="topbar">
+          <button class="icon-btn topbar__menu" type="button" id="menu-toggle" aria-label="Abrir menú" aria-expanded="false">
+            <span data-icon="menu"></span>
+          </button>
+          <div class="topbar__crumb">
+            <span>Taller</span>
+            <span class="topbar__slash">/</span>
+            <strong id="topbar-section">Panel</strong>
+          </div>
+          <div class="topbar__right">
+            <span class="date-chip" id="topbar-date"></span>
+            <button class="icon-btn icon-btn--notif" type="button" id="notif-btn" aria-label="Ver alertas de inventario">
+              <span data-icon="bell"></span>
+              <span class="notif-badge" id="notif-badge" hidden>0</span>
+            </button>
+            <div class="user-chip">
+              <span class="avatar avatar--sm" style="--avatar-color:#d8232a">R</span>
+              <div>
+                <strong>Recepción</strong>
+                <span>Mostrador</span>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main class="content" id="main-content" tabindex="-1"></main>
+      </div>
+    </div>
+
+    <div id="modal-root"></div>
+    <div class="toast-root" id="toast-root" aria-live="polite" aria-atomic="false"></div>
+
+    <script type="module" src="assets/js/app.js"></script>
+  </body>
+</html>

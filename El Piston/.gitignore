@@ -1,0 +1,26 @@
+# Base de datos generada por PocketBase (SQLite)
+server/pb_data/
+server/pb_data/types.d.ts
+
+# Binario de PocketBase (descargar manualmente; no subir al repo)
+server/pocketbase.exe
+
+# Helper opcional de creación de colecciones (uno solo)
+server/scripts/
+
+# Archivos temporales del sistema
+Thumbs.db
+.DS_Store
+*.log
+server-start.log
+
+# Entorno de desarrollo local
+node_modules/
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
