@@ -1,0 +1,5 @@
+# Datos generados por PocketBase (base de datos y archivos subidos)
+pb_data/
+
+# Ejecutable de PocketBase: se descarga desde las releases oficiales
+pocketbase.exe
